@@ -5,6 +5,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
@@ -48,6 +50,7 @@ public class SecurityConfig {
                     .invalidSessionUrl("/login")  // Redirigir cuando no se ha creado una sessión
                     .maximumSessions(1)  // Si es multiplataforma puede ser más de 1
                     .expiredUrl("/login")  // Redirigir 
+                    .sessionRegistry(sessionRegistry())  // Restreo de los datos de sesión
                 .and()
                 .sessionFixation()  // Vulnerabilidad Web (detecta un ataque de Fijación de sesión)
                     // migrateSession() - Crea otra sessión y migra los datos (Por defecto)
@@ -58,9 +61,14 @@ public class SecurityConfig {
                 .build();
     }
 
+    @Bean
+    public SessionRegistry sessionRegistry() {
+        return new SessionRegistryImpl();
+    }
+
     public AuthenticationSuccessHandler successHandler() {
         return ((request, response, authentication) -> {
-            response.sendRedirect("v1/index");
+            response.sendRedirect("v1/session");
         });
     }
 }
