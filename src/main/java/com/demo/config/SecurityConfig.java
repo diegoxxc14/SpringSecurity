@@ -58,6 +58,8 @@ public class SecurityConfig {
                     // none() - No hace nada (No recomendable)
                     .migrateSession()  
                 .and()
+                .httpBasic()  // Método que permite la autenticación en el header de la petición
+                .and()
                 .build();
     }
 
