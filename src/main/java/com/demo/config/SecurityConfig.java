@@ -4,7 +4,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 @Configuration
 @EnableWebSecurity
@@ -37,8 +39,22 @@ public class SecurityConfig {
                     auth.requestMatchers("v1/index2").permitAll();
                     auth.anyRequest().authenticated();
                 })
-                .formLogin().permitAll()
+                .formLogin()
+                    .successHandler(successHandler())  // Al iniciar sesión redirigir a URL
+                    .permitAll()
+                .and()
+                .sessionManagement()
+                    .sessionCreationPolicy(SessionCreationPolicy.ALWAYS)  // ALWAYS, IF_REQUIRED, NEVER, STATELESS
+                    .invalidSessionUrl("/login")  // Redirigir cuando no se ha creado una sessión
+                    .maximumSessions(1)  // Si es multiplataforma puede ser más de 1
+                    .expiredUrl("/login")  // Redirigir 
                 .and()
                 .build();
+    }
+
+    public AuthenticationSuccessHandler successHandler() {
+        return ((request, response, authentication) -> {
+            response.sendRedirect("v1/index");
+        });
     }
 }
