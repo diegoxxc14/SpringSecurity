@@ -49,6 +49,12 @@ public class SecurityConfig {
                     .maximumSessions(1)  // Si es multiplataforma puede ser más de 1
                     .expiredUrl("/login")  // Redirigir 
                 .and()
+                .sessionFixation()  // Vulnerabilidad Web (detecta un ataque de Fijación de sesión)
+                    // migrateSession() - Crea otra sessión y migra los datos (Por defecto)
+                    // newSession() - Crea una nueva sessión no copia los datos
+                    // none() - No hace nada (No recomendable)
+                    .migrateSession()  
+                .and()
                 .build();
     }
 
